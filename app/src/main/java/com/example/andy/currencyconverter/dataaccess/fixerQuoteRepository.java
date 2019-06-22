@@ -2,6 +2,7 @@ package com.example.andy.currencyconverter.dataaccess;
 
 import android.os.AsyncTask;
 import com.example.andy.currencyconverter.activities.Conversion;
+import com.example.andy.currencyconverter.utils.ServiceAccess;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,41 +29,18 @@ public class fixerQuoteRepository extends AsyncTask<Void, Void, Void>{
     private static final String BASE_URL = "http://data.fixer.io/api/latest?access_key=";
     private static final String access_key = "f57c335831c9335c2ecafce41c1969a0";
 
-    String real_url = BASE_URL + access_key;
+    private String real_url = BASE_URL + access_key;
 
 
     float VND_dataParsed;
     float CAD_dataParsed;
-
-    //async task still running in background
-    boolean FlagCancelled = false;
 
     @Override
     protected Void doInBackground(Void... voids) {
         try {
 
 //            while (FlagCancelled) {
-                URL url = new URL(real_url);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                InputStream inputStream = httpURLConnection.getInputStream();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
-                httpURLConnection.setConnectTimeout(15000);
-                httpURLConnection.setReadTimeout(15000);
-
-                String data = "";
-                String line = "";
-
-                while (line != null) {
-                    line = bufferedReader.readLine();
-                    data = data + line;
-                }
-
-                inputStream.close();
-                bufferedReader.close();
-
-
-                JSONObject jsonObject = new JSONObject(data);
+                JSONObject jsonObject = ServiceAccess.getData(real_url);
 
                 VND_dataParsed = Float.valueOf(jsonObject.getJSONObject("rates").getString("VND"));
                 CAD_dataParsed = Float.valueOf(jsonObject.getJSONObject("rates").getString("CAD"));
@@ -87,14 +65,7 @@ public class fixerQuoteRepository extends AsyncTask<Void, Void, Void>{
 
         Conversion.VND_dataParsed = this.VND_dataParsed;
         Conversion.CAD_dataParsed = this.CAD_dataParsed;
-        Conversion.json.setText(    "VND: " + VND_dataParsed + " | CAD: " + CAD_dataParsed);
+        Conversion.json.setText("VND: " + VND_dataParsed + " | CAD: " + CAD_dataParsed);
 
-//        onCancelled();
-    }
-
-    @Override
-    protected void onCancelled() {
-        super.onCancelled();
-//        FlagCancelled = true;
     }
 }

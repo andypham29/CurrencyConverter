@@ -146,7 +146,7 @@ public class Conversion extends AppCompatActivity implements View.OnClickListene
         editor.putString("CAD_dataParsed", String.valueOf(CAD_dataParsed));
         editor.putString("VND_dataParsed", String.valueOf(VND_dataParsed));
 
-        editor.commit();
+        editor.apply();
     }
     public void onClick(View v) {
         if(v == CAD_btn){
